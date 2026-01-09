@@ -1,21 +1,22 @@
 import MetaTrader5 as mt5
 import time
-
-# ========= MASTER ACCOUNT =========
-MASTER_LOGIN    = None
-MASTER_PASSWORD = "None"
-MASTER_SERVER   = "None"
-
-# ========= SLAVE ACCOUNT ==========
-SLAVE_LOGIN     = None
-SLAVE_PASSWORD  = "None"
-SLAVE_SERVER    = "None"
-
+try:
+    from config import (
+        MASTER_LOGIN, MASTER_PASSWORD, MASTER_SERVER,
+        SLAVE_LOGIN, SLAVE_PASSWORD, SLAVE_SERVER
+    )
+except ImportError:
+    print("❌ config.py not found.")
+    print("👉 Copy config.example.py to config.py and fill credentials.")
+    exit()
 MAGIC = 555555
 
 def connect(login, password, server):
-    mt5.shutdown()
-    return mt5.initialize(login=login, password=password, server=server)
+    if not mt5.initialize(login=login, password=password, server=server):
+        print(f"❌ Failed to connect: {mt5.last_error()}")
+        return False
+    print(f"✅ Connected to account {login}")
+    return True
 
 def get_positions():
     positions = mt5.positions_get()
